@@ -17,11 +17,12 @@ export default class FirebaseClient {
 
   public constructor() {
     const apps = getApps();
-    if (apps.length === null) {
+    if (apps.length === 0) {
       console.info('firebase client init start');
       initializeApp(FirebaseCredentials);
     }
     this.auth = getAuth();
+    console.info('firebase auth');
   }
 
   public static getInstance(): FirebaseClient {
