@@ -1,4 +1,4 @@
-import useFirebaseAuth from '@/hooks/user_firebase_auth';
+import useFirebaseAuth from '@/hooks/use_firebase_auth';
 import { InAuthUser } from '@/models/in_auth_user';
 import React, { useContext } from 'react';
 import { createContext } from 'react';

@@ -1,5 +1,6 @@
 import MemberModel from '@/models/member/member.model';
 import { NextApiRequest, NextApiResponse } from "next";
+import BadReqError from './error/bad_request_error';
 
 async function add(req: NextApiRequest, res: NextApiResponse) {
   const {
@@ -10,10 +11,10 @@ async function add(req: NextApiRequest, res: NextApiResponse) {
   } = req.body;
 
   if (uid === undefined || uid === null) {
-    res.status(400).json({ result: false, message: 'uid가 누락되었습니다.' });
+    throw new BadReqError('uid가 누락되었습니다.');
   }
   if (email === undefined || email === null) {
-    res.status(400).json({ result: false, message: 'email이 누락되었습니다.' });
+    throw new BadReqError('email이 누락되었습니다.');
   }
 
   const addResult = await MemberModel.add({ uid, email, displayName, photoURL });
