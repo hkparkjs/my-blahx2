@@ -6,7 +6,7 @@ const SCR_NAME_COL = 'screen_names';
 
 type AddResult = {result: true; id: string} | {result: false; message: string};
 
-async function add({uid, displayName, photoURL, email}:InAuthUser): Promise<AddResult> {
+async function add({uid, displayName, photoURL, email}: InAuthUser): Promise<AddResult> {
   try {
     // const addResult = await FirebaseAdmin.getInstance()
     //   .Firebase.collection('members')
@@ -54,10 +54,22 @@ async function add({uid, displayName, photoURL, email}:InAuthUser): Promise<AddR
     console.error(err);
     return { result: false, message: '서버 에러' }; 
   }
-} 
+}
+
+async function findByScreenName(screenName: string): Promise<InAuthUser | null> {
+  const memberRef = FirebaseAdmin.getInstance().Firebase.collection(SCR_NAME_COL).doc(screenName);
+
+  const memberDoc = await memberRef.get();
+  if (memberDoc.exists === false) {
+    return null;
+  }
+  const data = memberDoc.data() as InAuthUser;
+  return data;
+}
 
 const MemberModel = {
   add,
+  findByScreenName,
 }
 
 export default MemberModel;

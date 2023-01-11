@@ -25,8 +25,22 @@ async function add(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
+async function findByScreenName(req: NextApiRequest, res: NextApiResponse) {
+  const {screenName} = req.query;   //user.info/[screenName].ts
+  if (screenName === undefined || screenName === null) {
+    throw new BadReqError('screenName이 누락되었습니다.');
+  }
+  const extractScreenName = Array.isArray(screenName) ? screenName[0] : screenName;
+  const findResult = await MemberModel.findByScreenName(extractScreenName);
+  if (findResult === null) {
+    return res.status(404).end();
+  }
+  res.status(200).json(findResult);
+}
+
 const MemberCtrl = {
   add,
+  findByScreenName,
 };
 
 export default MemberCtrl;
