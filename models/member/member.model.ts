@@ -27,9 +27,9 @@ async function add({uid, displayName, photoURL, email}: InAuthUser): Promise<Add
     //     displayName: displayName ?? '',
     //     photoURL: photoURL ?? ''
     //   });
-      const addResult = await FirebaseAdmin.getInstance().Firebase.runTransaction(async (transaction) => {
-        const memberRef = FirebaseAdmin.getInstance().Firebase.collection(MEMBER_COL).doc(uid);
-        const screenNamesRef = FirebaseAdmin.getInstance().Firebase.collection(SCR_NAME_COL).doc(screenName);
+      const addResult = await FirebaseAdmin.getInstance().Firestore.runTransaction(async (transaction) => {
+        const memberRef = FirebaseAdmin.getInstance().Firestore.collection(MEMBER_COL).doc(uid);
+        const screenNamesRef = FirebaseAdmin.getInstance().Firestore.collection(SCR_NAME_COL).doc(screenName);
         const memberDoc = await transaction.get(memberRef);
 
         if (memberDoc.exists) {
@@ -57,7 +57,7 @@ async function add({uid, displayName, photoURL, email}: InAuthUser): Promise<Add
 }
 
 async function findByScreenName(screenName: string): Promise<InAuthUser | null> {
-  const memberRef = FirebaseAdmin.getInstance().Firebase.collection(SCR_NAME_COL).doc(screenName);
+  const memberRef = FirebaseAdmin.getInstance().Firestore.collection(SCR_NAME_COL).doc(screenName);
 
   const memberDoc = await memberRef.get();
   if (memberDoc.exists === false) {
