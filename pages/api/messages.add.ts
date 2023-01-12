@@ -10,7 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const supportMethod = ['POST'];   // add.ts내에서는 POST request만 지원할 것임.
   try {
     checkSupportMethod(supportMethod, method);
-    console.log("hahahahaha")
     await MessageCtrl.post(req, res);
   } catch (err) {
     console.error(err);

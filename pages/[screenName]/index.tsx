@@ -1,14 +1,53 @@
 import { ServiceLayout } from '@/components/service_layout';
 import { useAuth } from '@/contexts/auth_user.context';
-import { Avatar, Box, Button, Flex, FormControl, FormLabel, Switch, Text, Textarea, useToast } from '@chakra-ui/react';
+import { Avatar, Box, Button, Flex, FormControl, FormLabel, Switch, Text, Textarea, VStack, useToast } from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
 import { useState } from 'react';
 import ResizeTextarea from 'react-textarea-autosize';
 import axios, { AxiosResponse } from 'axios';
 import { InAuthUser } from '@/models/in_auth_user';
+import MessageItem from '@/components/message_item';
 
 interface Props {
   userInfo: InAuthUser | null;
+}
+
+async function postMessage({
+  uid, message, author
+} : {
+  uid: string;
+  message: string;
+  author?: {
+    displayName: string;
+    photoURL?: string;
+  }
+}) {
+  if (message.length <= 0) {
+    return {
+      result: false,
+      message: '메세지를 입력해주세요',
+    }
+  }
+  try {
+    await fetch('/api/messages.add', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        uid, message, author
+      })
+    })
+    return {
+      result: true
+    }
+  } catch (err) {
+    console.error(err);
+    return {
+      result: false,
+      message: '메시지 등록 실패',
+    }
+  }
 }
 
 const UserHomePage: NextPage<Props> = function ({ userInfo }) {
@@ -20,7 +59,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
     return <p>사용자를 찾을 수 없습니다.</p>;
   }
   return (
-    <ServiceLayout title="user home" minH="100vh" backgroundColor="gray.50">
+    <ServiceLayout title={`${authUser?.displayName}의 홈`} minH="100vh" backgroundColor="gray.50">
       <Box maxW="md" mx="auto" pt="6">
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden" mb="2" bg="white">
           <Flex p="6">
@@ -49,7 +88,6 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
               onChange={(e)=>{
                 if (e.currentTarget.value) {
                   const lineCount = (e.currentTarget.value.match(/[^\n]*\n[^\n]*/gi)?.length ?? 1) + 1;
-                  console.info(lineCount)
                   if (lineCount > 7) {
                     // TODO: add toast
                     return;
@@ -65,6 +103,31 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
               colorScheme="yellow"
               variant="solid"
               size="sm"
+              onClick={async () => {
+                const postData: {
+                  message: string;
+                  uid: string;
+                  author?: {
+                    displayName: string;
+                    photoURL?: string;
+                  }
+                } = {
+                  message,
+                  uid: userInfo.uid,
+                }
+                if (isAnonymous === false) {
+                  postData.author = {
+                    photoURL: authUser?.photoURL ?? 'http://bit.ly/broken-link',
+                    displayName: authUser?.displayName ?? 'anonymous',
+                  };
+                }
+                const messageResp = await postMessage(postData);
+                if (messageResp.result === false) {
+                  // toast({title: '메세지 등록 실패', position:'top-right' });
+                  console.log('메세지 등록 실패');
+                }
+                setMessage('');
+              }}
             >
               등록
             </Button>
@@ -88,6 +151,20 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
             <FormLabel htmlFor='anonymous' mb="0" fontSize="xx-small">Anonymous</FormLabel>
           </FormControl>
         </Box>
+        <VStack spacing="12px" mt="6">
+          <MessageItem 
+            photoURL={authUser?.photoURL ?? ''}
+            uid="asdf"
+            displayName='test-asdf'
+            isOwner={true}
+            item={{id: 'test', message: 'test', createAt: '2022-03-12T20:30:55+09:00', reply: 'reply', replyAt: '2022-04-12T20:30:55+09:00'}} />
+          <MessageItem 
+            photoURL={authUser?.photoURL ?? ''}
+            uid="asdf"
+            displayName='test-asdf'
+            isOwner={true}
+            item={{id: 'test', message: 'test', createAt: '2022-03-12T20:30:55+09:00'}} />
+        </VStack>
       </Box>
     </ServiceLayout>
   );
