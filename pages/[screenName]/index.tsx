@@ -7,6 +7,7 @@ import ResizeTextarea from 'react-textarea-autosize';
 import axios, { AxiosResponse } from 'axios';
 import { InAuthUser } from '@/models/in_auth_user';
 import MessageItem from '@/components/message_item';
+import { InMessage } from '@/models/message/in_message';
 
 interface Props {
   userInfo: InAuthUser | null;
@@ -63,6 +64,25 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
       if (resp.status === 200) {
         const data = await resp.json();
         setMessageList(data);
+      }
+    } catch (err) {
+      console.error(err);
+    };
+  }
+  async function fetchMessageInfo({ uid, messageId }: { uid: string; messageId: string }) {
+    try {
+      const resp = await fetch(`/api/messages.info?uid=${uid}&messageId=${messageId}`);
+      if (resp.status === 200) {
+        const data: InMessage = await resp.json();
+        setMessageList((prev) => {
+          const findIndex = prev.findIndex((fv) => fv.id === data.id);
+          if (findIndex >= 0) {
+            const updateArr = [...prev];
+            updateArr[findIndex] = data;
+            return updateArr;
+          }
+          return prev;
+        });
       }
     } catch (err) {
       console.error(err);
@@ -145,6 +165,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
                   console.log('메세지 등록 실패');
                 }
                 setMessage('');
+                setMessageListFetchTrigger((prev) => !prev);
               }}
             >
               등록
@@ -179,7 +200,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
               photoURL={userInfo.photoURL ?? 'http://bit.ly/broken-link'}
               isOwner={isOwner}
               onSendComplete={()=> {
-                setMessageListFetchTrigger((prev) => !prev); 
+                fetchMessageInfo({uid: userInfo.uid, messageId: messageData.id});
               }} 
             />
           ))}
