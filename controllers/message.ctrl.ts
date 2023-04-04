@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import BadReqError from './error/bad_request_error';
 import MessageModel from '@/models/message/message.model';
 import CustomServerError from './error/custom_server_error';
+import FirebaseAdmin from '../models/firebase_admin';
 
 async function post(req: NextApiRequest, res: NextApiResponse) {
   const { uid, message, author } = req.body;

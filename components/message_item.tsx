@@ -1,9 +1,10 @@
 import { InMessage } from '@/models/message/in_message';
 import ResizeTextarea from 'react-textarea-autosize';
 import convertDateToString from '@/utils/convert_date_to_string';
-import { Avatar, Box, Button, Divider, Flex, IconButton, Menu, MenuButton, MenuList, MenuItem, Spacer, Text, Textarea } from '@chakra-ui/react';
+import { Avatar, Box, Button, Divider, Flex, IconButton, Menu, MenuButton, MenuList, MenuItem, Spacer, Text, Textarea, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import MoreBtnIcon from './more_btn_icon';
+import FirebaseClient from '@/models/firebase_client';
 
 interface Props {
   uid: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const MessageItem = function ({ uid, item, photoURL, isOwner, displayName, onSendComplete }: Props) {
   const [reply, setReply] = useState('');
+  const toast = useToast();
 
   async function postReply() {
     const resp = await fetch('/api/messages.add.reply', {
@@ -32,7 +34,32 @@ const MessageItem = function ({ uid, item, photoURL, isOwner, displayName, onSen
       onSendComplete();
     }
   }
+
+  async function updateMessage({deny}: {deny: boolean}) {
+    const token = await FirebaseClient.getInstance().Auth.currentUser?.getIdToken();
+    if (token === undefined) {
+      toast({
+        title: '로그인한 사용자만 사용할 수 있는 메뉴입니다.'
+      });
+      return;
+    }
+    const resp = await fetch('/api/messages.deny', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', authorization: token },
+      body: JSON.stringify({
+        uid,
+        messageId: item.id,
+        deny
+      }),
+    });
+    console.info(resp.status);
+    if (resp.status < 300) {
+      onSendComplete();
+    }
+  }
+
   const haveReply = item.reply !== undefined;
+  const isDeny = item.deny !== undefined ? item.deny === true : false;
   return (
     <Box borderRadius="md" width="full" bg="white" boxShadow="md">
       <Box>
@@ -49,7 +76,11 @@ const MessageItem = function ({ uid, item, photoURL, isOwner, displayName, onSen
             <Menu>
               <MenuButton as={IconButton} icon={<MoreBtnIcon />} width="24px" height="24px" borderRadius="full" variant="link" size="xs" />
               <MenuList>
-                <MenuItem>비공개 처리</MenuItem>
+                <MenuItem onClick={() => {
+                  updateMessage({ deny: item.deny !== undefined ? !item.deny : true });
+                }}>
+                  {isDeny ? '비공개 처리 해제' : '비공개 처리'}
+                </MenuItem>
               </MenuList>
             </Menu>
           )}
