@@ -1,8 +1,9 @@
 import { InMessage } from '@/models/message/in_message';
 import ResizeTextarea from 'react-textarea-autosize';
 import convertDateToString from '@/utils/convert_date_to_string';
-import { Avatar, Box, Button, Divider, Flex, Text, Textarea } from '@chakra-ui/react';
+import { Avatar, Box, Button, Divider, Flex, IconButton, Menu, MenuButton, MenuList, MenuItem, Spacer, Text, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
+import MoreBtnIcon from './more_btn_icon';
 
 interface Props {
   uid: string;
@@ -35,7 +36,7 @@ const MessageItem = function ({ uid, item, photoURL, isOwner, displayName, onSen
   return (
     <Box borderRadius="md" width="full" bg="white" boxShadow="md">
       <Box>
-        <Flex pl="2" pt="2" alignItems="center">
+        <Flex px="2" pt="2" alignItems="center">
           <Avatar size="xs" src={item.author ? item.author.photoURL ?? 'http://bit.ly/broken-link' : 'http://bit.ly/broken-link'} />
           <Text fontSize="xx-small" ml="1">
             {item.author ? item.author.displayName : 'anonymous'}
@@ -43,6 +44,15 @@ const MessageItem = function ({ uid, item, photoURL, isOwner, displayName, onSen
           <Text whiteSpace="pre-line" fontSize="xx-small" color="gray.500" ml="1">
             {convertDateToString(item.createAt)}
           </Text>
+          <Spacer />
+          {isOwner && (
+            <Menu>
+              <MenuButton as={IconButton} icon={<MoreBtnIcon />} width="24px" height="24px" borderRadius="full" variant="link" size="xs" />
+              <MenuList>
+                <MenuItem>비공개 처리</MenuItem>
+              </MenuList>
+            </Menu>
+          )}
         </Flex>
       </Box>
       <Box p="2">
