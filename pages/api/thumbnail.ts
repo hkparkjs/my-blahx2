@@ -11,15 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const host = process.env.HOST || 'localhost';
     const port = process.env.PORT || '3000';
     const baseUrl = `${protocol}://${host}:${port}`;
-    console.log(baseUrl)
     await Chromium.font(`${baseUrl}/Pretendard-Regular.ttf`);
   }
 
-  const browser = await playwright.chromium.launch(/*{
+  const browser = await playwright.chromium.launch({
     args: Chromium.args,
-    executablePath: process.env.NODE_ENV !== 'development' ? await Chromium.executablePath : localChromePath,
-    headless: process.env.NODE_ENV !== 'development' ? Chromium.headless : true,
-  }*/);
+    /*executablePath: process.env.NODE_ENV !== 'development' ? await Chromium.executablePath : localChromePath,
+    headless: process.env.NODE_ENV !== 'development' ? Chromium.headless : true,*/
+  });
 
   const page = await browser.newPage({
     viewport: {
