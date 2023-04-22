@@ -2,10 +2,10 @@
 
 import Chromium from 'chrome-aws-lambda';
 import playwright from 'playwright-core';
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const localChromePath = process.env.NODE_ENV !== 'development' ? '' : process.env.LOCAL_CHROME_PATH ?? '';
+  // const localChromePath = process.env.NODE_ENV !== 'development' ? '' : process.env.LOCAL_CHROME_PATH ?? '';
   if (process.env.NODE_ENV !== 'development') {
     const protocol = process.env.PROTOCOL || 'http';
     const host = process.env.HOST || 'localhost';

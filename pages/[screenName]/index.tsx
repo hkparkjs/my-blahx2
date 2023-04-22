@@ -1,15 +1,15 @@
-import { ServiceLayout } from '@/components/service_layout';
-import { useAuth } from '@/contexts/auth_user.context';
-import { Avatar, Box, Button, Flex, FormControl, FormLabel, Switch, Text, Textarea, VStack, useToast } from '@chakra-ui/react';
-import { TriangleDownIcon } from '@chakra-ui/icons';
+import { Avatar, Box, Button, Flex, FormControl, FormLabel, Switch, Text, Textarea, VStack /*, useToast*/ } from '@chakra-ui/react';
+// import { TriangleDownIcon } from '@chakra-ui/icons';
 import { GetServerSideProps, NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from 'react-query';
 import ResizeTextarea from 'react-textarea-autosize';
 import axios, { AxiosResponse } from 'axios';
 import { InAuthUser } from '@/models/in_auth_user';
+import { ServiceLayout } from '@/components/service_layout';
+import { useAuth } from '@/contexts/auth_user.context';
 import MessageItem from '@/components/message_item';
 import { InMessage } from '@/models/message/in_message';
-import { useQuery } from 'react-query';
 
 interface Props {
   userInfo: InAuthUser | null;
@@ -17,40 +17,44 @@ interface Props {
 }
 
 async function postMessage({
-  uid, message, author
-} : {
+  uid,
+  message,
+  author,
+}: {
   uid: string;
   message: string;
   author?: {
     displayName: string;
     photoURL?: string;
-  }
+  };
 }) {
   if (message.length <= 0) {
     return {
       result: false,
       message: '메세지를 입력해주세요',
-    }
+    };
   }
   try {
     await fetch('/api/messages.add', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       body: JSON.stringify({
-        uid, message, author
-      })
-    })
+        uid,
+        message,
+        author,
+      }),
+    });
     return {
-      result: true
-    }
+      result: true,
+    };
   } catch (err) {
     console.error(err);
     return {
       result: false,
       message: '메시지 등록 실패',
-    }
+    };
   }
 }
 
@@ -61,7 +65,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
   const [totalPages, setTotalPages] = useState(1);
   const [messageList, setMessageList] = useState<InMessage[]>([]);
   const [messageListFetchTrigger, setMessageListFetchTrigger] = useState(false);
-  const toast = useToast();
+  // const toast = useToast();
   const { authUser } = useAuth();
   async function fetchMessageInfo({ uid, messageId }: { uid: string; messageId: string }) {
     try {
@@ -80,28 +84,32 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
       }
     } catch (err) {
       console.error(err);
-    };
+    }
   }
   const messageListQueryKey = ['messageList', userInfo?.uid, page, messageListFetchTrigger];
-  useQuery(messageListQueryKey, async () => await axios.get<{
-    totalElements: number;
-    totalPages: number;
-    page: number;
-    size: number;
-    content: InMessage[];
-  }>(`/api/messages.list?uid=${userInfo?.uid}&page=${page}&size=10`),
-  {
-    keepPreviousData: true,
-    refetchOnWindowFocus: false,
-    onSuccess: (data) => {
-      setTotalPages(data.data.totalPages);
-      if (page === 1) {
-        setMessageList([...data.data.content]);
-        return;
-      }
-      setMessageList(prev => [...prev, ...data.data.content]);
+  useQuery(
+    messageListQueryKey,
+    async () =>
+      // eslint-disable-next-line no-return-await
+      await axios.get<{
+        totalElements: number;
+        totalPages: number;
+        page: number;
+        size: number;
+        content: InMessage[];
+      }>(`/api/messages.list?uid=${userInfo?.uid}&page=${page}&size=10`),
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      onSuccess: (data) => {
+        setTotalPages(data.data.totalPages);
+        if (page === 1) {
+          setMessageList([...data.data.content]);
+          return;
+        }
+        setMessageList((prev) => [...prev, ...data.data.content]);
+      },
     },
-  }
   );
   if (userInfo === null) {
     return <p>사용자를 찾을 수 없습니다.</p>;
@@ -134,7 +142,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
               maxRows={7}
               as={ResizeTextarea}
               value={message}
-              onChange={(e)=>{
+              onChange={(e) => {
                 if (e.currentTarget.value) {
                   const lineCount = (e.currentTarget.value.match(/[^\n]*\n[^\n]*/gi)?.length ?? 1) + 1;
                   if (lineCount > 7) {
@@ -159,11 +167,11 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
                   author?: {
                     displayName: string;
                     photoURL?: string;
-                  }
+                  };
                 } = {
                   message,
                   uid: userInfo.uid,
-                }
+                };
                 if (isAnonymous === false) {
                   postData.author = {
                     photoURL: authUser?.photoURL ?? 'http://bit.ly/broken-link',
@@ -201,7 +209,9 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
                 setAnonymous((prev) => !prev);
               }}
             />
-            <FormLabel htmlFor='anonymous' mb="0" fontSize="xx-small">Anonymous</FormLabel>
+            <FormLabel htmlFor="anonymous" mb="0" fontSize="xx-small">
+              Anonymous
+            </FormLabel>
           </FormControl>
         </Box>
         <VStack spacing="12px" mt="6">
@@ -214,9 +224,9 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
               displayName={userInfo.displayName ?? ''}
               photoURL={userInfo.photoURL ?? 'http://bit.ly/broken-link'}
               isOwner={isOwner}
-              onSendComplete={()=> {
+              onSendComplete={() => {
                 fetchMessageInfo({ uid: userInfo.uid, messageId: messageData.id });
-              }} 
+              }}
             />
           ))}
         </VStack>
@@ -227,7 +237,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
             fontSize="sm"
             /*leftIcon={<TriangleDownIcon />}*/
             onClick={() => {
-              setPage(p => p + 1);
+              setPage((p) => p + 1);
             }}
           >
             더보기
@@ -238,7 +248,6 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
   );
 };
 
-
 export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) => {
   const { screenName } = query;
   if (screenName === undefined) {
@@ -246,8 +255,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
       props: {
         userInfo: null,
         screenName: '',
-      }
-    }
+      },
+    };
   }
   const screenNameToStr = Array.isArray(screenName) ? screenName[0] : screenName;
   try {
@@ -261,16 +270,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
       props: {
         userInfo: userInfoResp.data ?? null,
         screenName: screenNameToStr,
-      }
-    }
+      },
+    };
   } catch (err) {
     console.error(err);
     return {
       props: {
         userInfo: null,
         screenName: '',
-      }
-    }
+      },
+    };
   }
 };
 

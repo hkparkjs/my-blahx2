@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prettier-format": "prettier --config .prettierrc 'pages/**/*.ts' --write"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
@@ -16,7 +17,7 @@
     "chrome-aws-lambda": "6",
     "firebase": "^9.15.0",
     "firebase-admin": "^11.4.1",
-    "framer-motion": "^8.2.4",
+    "framer-motion": "6.5.1",
     "moment": "^2.29.4",
     "next": "12.0.7",
     "playwright-core": "^1.32.2",
@@ -34,7 +35,7 @@
     "@typescript-eslint/parser": "^5.8.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-styled-components": "^2.0.2",
-    "eslint": "8.4.1",
+    "eslint": "^8.39.0",
     "eslint-config-airbnb": "^19.0.2",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^16.1.0",

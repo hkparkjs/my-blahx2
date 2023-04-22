@@ -1,14 +1,14 @@
-import { ServiceLayout } from '@/components/service_layout';
-import { useAuth } from '@/contexts/auth_user.context';
 import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
+import Link from 'next/link';
+import Head from 'next/head';
 import { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { ServiceLayout } from '@/components/service_layout';
+import { useAuth } from '@/contexts/auth_user.context';
 import { InAuthUser } from '@/models/in_auth_user';
 import MessageItem from '@/components/message_item';
 import { InMessage } from '@/models/message/in_message';
-import Link from 'next/link';
-import Head from 'next/head';
 // import { ChevronLeftIcon } from '@chakra-ui/icons';
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const MessagePage: NextPage<Props> = function ({ userInfo, messageData: initMsgData, screenName, baseUrl }) {
-  const [messageData, setMessageData] = useState<null|InMessage>(initMsgData);
+  const [messageData, setMessageData] = useState<null | InMessage>(initMsgData);
   const { authUser } = useAuth();
   async function fetchMessageInfo({ uid, messageId }: { uid: string; messageId: string }) {
     try {
@@ -30,7 +30,7 @@ const MessagePage: NextPage<Props> = function ({ userInfo, messageData: initMsgD
       }
     } catch (err) {
       console.error(err);
-    };
+    }
   }
 
   if (userInfo === null) {
@@ -76,16 +76,15 @@ const MessagePage: NextPage<Props> = function ({ userInfo, messageData: initMsgD
             screenName={screenName}
             photoURL={userInfo.photoURL ?? 'http://bit.ly/broken-link'}
             isOwner={isOwner}
-            onSendComplete={()=> {
+            onSendComplete={() => {
               fetchMessageInfo({ uid: userInfo.uid, messageId: messageData.id });
-            }} 
+            }}
           />
         </Box>
       </ServiceLayout>
     </>
   );
 };
-
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) => {
   const { screenName, messageId } = query;
@@ -96,8 +95,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
         messageData: null,
         screenName: '',
         baseUrl: '',
-      }
-    }
+      },
+    };
   }
   if (messageId === undefined) {
     return {
@@ -106,8 +105,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
         messageData: null,
         screenName: '',
         baseUrl: '',
-      }
-    }
+      },
+    };
   }
 
   try {
@@ -124,20 +123,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
           messageData: null,
           screenName: screenNameToStr,
           baseUrl,
-        }
-      }
+        },
+      };
     }
-    const messageInfoResp: AxiosResponse<InMessage> = await axios(
-      `${baseUrl}/api/messages.info?uid=${userInfoResp.data.uid}&messageId=${messageId}`,
-    );
+    const messageInfoResp: AxiosResponse<InMessage> = await axios(`${baseUrl}/api/messages.info?uid=${userInfoResp.data.uid}&messageId=${messageId}`);
     return {
       props: {
         userInfo: userInfoResp.data,
         messageData: messageInfoResp.status !== 200 || messageInfoResp.data === undefined ? null : messageInfoResp.data,
         screenName: screenNameToStr,
         baseUrl,
-      }
-    }
+      },
+    };
   } catch (err) {
     console.error(err);
     return {
@@ -146,8 +143,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
         messageData: null,
         screenName: '',
         baseUrl: '',
-      }
-    }
+      },
+    };
   }
 };
 

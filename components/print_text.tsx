@@ -1,6 +1,6 @@
 import { Text } from '@chakra-ui/react';
 
-const PrintText = function ({printText}: {printText: string}) {
+const PrintText = function ({ printText }: { printText: string }) {
   const textCount = printText.length;
   const usedText = textCount > 200 ? `${printText.substring(0, 199)} ...` : printText;
   return (
@@ -8,6 +8,6 @@ const PrintText = function ({printText}: {printText: string}) {
       {usedText}
     </Text>
   );
-}
+};
 
 export default PrintText;

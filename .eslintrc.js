@@ -67,6 +67,7 @@ module.exports = {
     'import/no-unresolved': 0,
     'space-before-function-paren': 0,
     'react/jsx-one-expression-per-line': 0,
+    'react/jsx-props-no-spreading': 'off',
     'react/no-danger': 0,
     'react/display-name': 1,
     'react/react-in-jsx-scope': 0,

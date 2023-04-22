@@ -10,6 +10,6 @@ const MoreBtnIcon = function () {
       </g>
     </Icon>
   );
-}
+};
 
 export default MoreBtnIcon;

@@ -1,11 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import '../styles/globals.css';
 import type { AppProps /*, AppContext */ } from 'next/app';
-import { AuthUserProvider } from '@/contexts/auth_user.context';
 import { useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { AuthUserProvider } from '@/contexts/auth_user.context';
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = function ({ Component, pageProps }: AppProps) {
   const queryClientRef = useRef<QueryClient>();
   if (!queryClientRef.current) {
     queryClientRef.current = new QueryClient();
@@ -19,6 +19,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       </ChakraProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default MyApp;
