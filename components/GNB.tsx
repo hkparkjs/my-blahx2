@@ -12,20 +12,16 @@ const GNB = function () {
 
   const logoutBtn = (
     <Menu>
-      <MenuButton as={IconButton} icon={<Avatar size="md" src={authUser?.photoURL ?? 'http://bit.ly/broken-link'}/>} borderRadius="full" variant="link" />
+      <MenuButton as={IconButton} icon={<Avatar size="md" src={authUser?.photoURL ?? 'http://bit.ly/broken-link'} />} borderRadius="full" variant="link" />
       <MenuList>
         <MenuItem
           onClick={() => {
-            window.location.href = `/${authUser?.email.replace('@gmail.com', '')}`;
+            window.location.href = `/${authUser?.email?.replace('@gmail.com', '')}`;
           }}
         >
           사용자 홈으로 이동
         </MenuItem>
-        <MenuItem
-          onClick={signOut}
-        >
-          로그아웃
-        </MenuItem>
+        <MenuItem onClick={signOut}>로그아웃</MenuItem>
       </MenuList>
     </Menu>
   );

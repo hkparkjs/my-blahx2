@@ -25,8 +25,8 @@ export default function useFirebaseAuth() {
             photoURL: signInResult.user.photoURL 
           })
         });
-        // console.info({status: resp.status});
-        const respData = await resp.json();
+        console.info({status: resp.status});
+        // const respData = await resp.json();
         // console.info(respData);
       }
     }
