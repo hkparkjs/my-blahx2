@@ -12,7 +12,7 @@ export default function useFirebaseAuth() {
     try {
       const signInResult = await signInWithPopup(FirebaseClient.getInstance().Auth, provider);
       if (signInResult.user) {
-        console.info(signInResult.user);
+        // console.info(signInResult.user);
         const resp = await fetch('/api/members.add', {
           method: 'POST',
           headers: {
@@ -25,9 +25,9 @@ export default function useFirebaseAuth() {
             photoURL: signInResult.user.photoURL 
           })
         });
-        console.info({status: resp.status});
+        // console.info({status: resp.status});
         const respData = await resp.json();
-        console.info(respData);
+        // console.info(respData);
       }
     }
     catch (err) {
