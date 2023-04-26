@@ -5,7 +5,7 @@ import playwright from 'playwright-core';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // const localChromePath = process.env.NODE_ENV !== 'development' ? '' : process.env.LOCAL_CHROME_PATH ?? '';
+  const localChromePath = process.env.NODE_ENV !== 'development' ? '' : process.env.LOCAL_CHROME_PATH ?? '';
   if (process.env.NODE_ENV !== 'development') {
     const protocol = process.env.PROTOCOL || 'http';
     const host = process.env.HOST || 'localhost';
@@ -16,8 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const browser = await playwright.chromium.launch({
     args: Chromium.args,
-    /*executablePath: process.env.NODE_ENV !== 'development' ? await Chromium.executablePath : localChromePath,
-    headless: process.env.NODE_ENV !== 'development' ? Chromium.headless : true,*/
+    executablePath: process.env.NODE_ENV !== 'development' ? await Chromium.executablePath : localChromePath,
+    headless: process.env.NODE_ENV !== 'development' ? Chromium.headless : true,
   });
 
   const page = await browser.newPage({
